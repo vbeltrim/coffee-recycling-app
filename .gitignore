@@ -1,0 +1,13 @@
+# Node modules (backend + frontend)
+node_modules/
+
+# Environment variables (SECRET KEYS go here)
+.env
+
+# Firebase debug files
+firebase-debug.log
+.firebaserc
+
+# macOS hidden files
+.DS_Store
+
