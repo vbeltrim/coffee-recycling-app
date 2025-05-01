@@ -10,8 +10,12 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const authRoutes = require('./routes/authentication');
-app.use('/', authRoutes);
+const auth = require('./routes/authentication');
+const collaborateRoutes = require('./routes/collaborate');
+const orders = require('./routes/orders')
+const product = require('./routes/product')
+app.use('/', auth);
+
 
 // Start server
 const PORT = process.env.API_PORT || 3000;

@@ -12,9 +12,7 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        await db.execute(
-            `INSERT INTO collaborate (name, surname, email, phone, message)
-       VALUES (?, ?, ?, ?, ?)`,
+        await db.execute(`INSERT INTO collaborations (name, surname, email, phone, message) VALUES (?, ?, ?, ?, ?)`,
             [name, surname, email, phone || null, message || null]
         );
 

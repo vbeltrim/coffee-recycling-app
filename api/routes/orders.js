@@ -106,3 +106,4 @@ router.post('/',authenticateToken, async  (req, res)=>{
         res.status(500).json({ message: 'There has been an error creating the order' });
     }
 })
+module.exports = router;
