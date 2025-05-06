@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const database = require('../database');
 const authenticateToken = require('../middleware/auth')
-const Product = require('../models/Product');
 require('dotenv').config();
 
 router.get('/',authenticateToken, async (req,res) =>{
