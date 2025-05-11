@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const database = require('../database');
+const authenticateToken = require("../middleware/auth");
 require('dotenv').config();
 
 
@@ -57,6 +58,7 @@ router.post('/login', async(req,res)=>{
 
     console.log('/login endpoint was hit');
 
+
     try{ // check if the user already exists in the database
         const userExists = await database.query('SELECT * FROM tfg.users WHERE email = $1', [email])
         if (userExists.rows.length>0){ //Si nhi ha més de 0 vol dir que existeix
@@ -65,6 +67,8 @@ router.post('/login', async(req,res)=>{
                 const token = jwt.sign(
                     {
                         id: userExists.rows[0].id,
+                        name: userExists.rows[0].name,
+                        surname: userExists.rows[0].surname,
                         email: userExists.rows[0].email,
                         role: userExists.rows[0].role
                     },
@@ -74,11 +78,35 @@ router.post('/login', async(req,res)=>{
                 res.status(201).json({ token });
             }
         }
-        else{
+        else if(userExists.rows.length==0){
             return res.status(400).json({error: 'User does not exist or password is not correct'});
         }
     }catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({error: 'Server error'});
     }})
+router.post('/password', authenticateToken, async (req,res)=>{
+
+    console.log("Password endpoint hit")
+    console.log(req.body.newPassword);
+
+    const { email, newPassword } = req.body
+    if (!email || !newPassword) {
+        return res.status(400).json({ error: 'Missing fields' })
+    }
+    try{
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+        await database.query(
+            'UPDATE tfg.users SET password = $1 WHERE email = $2',
+            [hashedPassword, email]
+        )
+        res.status(200).json({ message: 'Password updated successfully' })
+    } catch (err) {
+        console.error('Password update error:', err)
+        res.status(500).json({ error: 'Server error' })
+    }
+})
+
 module.exports = router;

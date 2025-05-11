@@ -11,10 +11,13 @@ app.use(express.json());
 
 // Routes
 const auth = require('./routes/authentication');
-const collaborateRoutes = require('./routes/collaborate');
+const collaborate = require('./routes/collaborate');
 const orders = require('./routes/orders')
 const product = require('./routes/product')
 app.use('/', auth);
+app.use('/', product);
+app.use('/', orders);
+app.use('/', collaborate);
 
 
 // Start server

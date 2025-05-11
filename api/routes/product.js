@@ -3,65 +3,52 @@ const router = express.Router();
 const db = require('../database');
 
 
-router.get('/:id/stock', async (req, res) => {
-    const { id } = req.params;
-
+/*router.get('/stock', async (req, res) => {
     try {
-        const [rows] = await db.execute('SELECT stock FROM products WHERE id = ?', [id]);
-        const product = rows[0];
-
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found.' });
-        }
-
-        const stock = product.stock;
-        let label;
-
-        if (stock === 0) {
-            label = 'Out of stock';
-        } else if (stock <= 5) {
-            label = 'Only a few left';
-        } else if (stock <= 20) {
-            label = 'Low stock';
-        } else if (stock <= 100) {
-            label = 'In stock';
-        } else {
-            label = 'Available';
-        }
-
-        res.status(200).json({
-            productId: parseInt(id),
-            stock,        // So that the frontend can put a limit to the user chosen amount.
-            label        // It will be used to give a hint to the user.
-        });
-
-    } catch (error) {
-        console.error('Error fetching stock info:', error);
-        res.status(500).json({ message: 'Server error.' });
-    }
-});
-router.get('/products', async (req,res)=>{
-    try{
-        const [rows] = await db.execute('SELECT product_id, name, description, price FROM products');
-
-        const products = rows.map(product=> {
+        const result = await db.query('SELECT id, stock FROM tfg.products')
+        const stock = result.rows.map(product=> {
             return {
-                id: product.product_id,
+                id: product.id,
+                stock: product.stock
+            };
+        });
+        res.status(200).json(stock);
+    }catch (err){
+        console.error('Error fetching stock:', err)
+        res.status(500).json({ error: 'Failed to retrieve stock' })
+    }
+})*/
+
+
+router.get('/products', async (req,res)=>{
+
+    try{
+
+        const result = await db.query('SELECT * FROM tfg.products');
+
+        const products = result.rows.map(product=> {
+            return {
+                id: product.id,
                 name: product.name,
-                description: product.description,
-                price: product.price
+                shortDescription: product.short_description,
+                longDescription: product.long_description,
+                price: product.price,
+                stock: product.stock,
+                url_image: product.url_image
             };
         })
         res.status(200).json(products);
-    }catch{
+    }catch(err){
+        console.error('DB error:', err)
         res.status(500).json({ message: 'Server error fetching products.' });
     }
 })
 
+
 //Create methods that return stock and update it. They will be used by the orders endpoints.
 const Product = {
     async checkStock(productId) {
-        const [rows] = await db.execute('SELECT stock FROM products WHERE product_id = ?', [productId]);
+        const [rows] = await db.query('SELECT stock FROM products WHERE product_id = ?', [productId]);
         return rows[0]?.stock ?? null; // returns null if not found
     },
     async productExists(productId) {
@@ -82,10 +69,10 @@ const Product = {
         const currentStock = await this.checkStock(productId);
 
         if (currentStock < amount) {
-            return false; // Not enough stock
+            return false; //
         }
 
-        await db.execute(
+        await db.query(
             'UPDATE products SET stock = stock - ? WHERE product_id = ?',
             [amount, productId]
         );
