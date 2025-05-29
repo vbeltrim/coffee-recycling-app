@@ -8,31 +8,31 @@ const authenticateToken = require("../middleware/auth");
 * 1- The user must have bought the product
 * 2- The user must not have reviewed the product
 * */
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/review', authenticateToken, async (req, res) => {
     const { order_id, product_id, description, star_rating } = req.body;
-    const user_id = req.user.user_id;
+    const user_id = req.user.id;
 
+    console.log(order_id, product_id, description, star_rating, user_id);
     //check these fields are not missing
     if (!order_id || !product_id || !description || !star_rating) {
         return res.status(400).json({ message: 'Missing fields in request' });
     }
-
     try { //check the product has actually been bought
         const purchaseCheck = await db.query(
             `SELECT 1
-            FROM orders o
-            JOIN order_items oi ON o.order_id = oi.order_id
-            WHERE o.user_id = $1 AND oi.product_id = $2`,
+            FROM tfg.orders o
+            JOIN tfg.order_items oi ON o.id = oi.order_id
+            WHERE o.user_id = $1 AND oi.product_id = $2 AND o.status = 'Delivered'`,
             [user_id, product_id]
         );
 
         if (purchaseCheck.rows.length === 0) {
-            return res.status(403).json({ message: 'You can only review products you have purchased' });
+            return res.status(403).json({ message: 'You can only review products from delivered orders' });
         }
 
         // Check for existing review
         const existing = await db.query(
-            'SELECT 1 FROM reviews WHERE user_id = $1 AND product_id = $2',
+            'SELECT 1 FROM tfg.reviews WHERE user_id = $1 AND product_id = $2',
             [user_id, product_id]
         );
 
@@ -42,7 +42,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
         // Insert the review on the database
         await db.query(
-            `INSERT INTO reviews (user_id, order_id, product_id, description, star_rating)
+            `INSERT INTO tfg.reviews (user_id, order_id, product_id, description, star_rating)
              VALUES ($1, $2, $3, $4, $5)`,
             [user_id, order_id, product_id, description, star_rating]
         );
@@ -56,13 +56,14 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 /*The endpoint returns all reviews for a certain product*/
-router.get('/product/:productId', async (req, res) => {
+router.get('/review/product/:productId', async (req, res) => {
     const { productId } = req.params;
 
     try {
         const result = await db.query(
             `SELECT r.description, r.star_rating, r.created_at, u.name
-                FROM reviews r
+                FROM tfg.reviews r
+                JOIN tfg.users u ON r.user_id = u.id
                 WHERE r.product_id = $1
                 ORDER BY r.created_at DESC`,
             [productId]

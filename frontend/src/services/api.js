@@ -11,7 +11,7 @@ export const registerUser = async (userData) => {
     return axios.post(`${API_URL}/login`, userData)
   }
   export const getProducts = async => {
-    return axios.get(`https://coffee-fuel.shop/products`)
+    return axios.get(`${API_URL}/products`)
   }
   export const updatePassword = async (email, newPassword) => {
     const token = localStorage.getItem('token')
@@ -56,6 +56,20 @@ export const registerUser = async (userData) => {
   export const submitCollaboration = async (formData) => {
     return axios.post(`${API_URL}/collaborate`, formData)
   }
+
+  export const postReview = async (reviewData) => {
+    const token = localStorage.getItem('token')
+    return axios.post(`${API_URL}/review`, reviewData, {
+        headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+  }
+  export async function getReviewsByProductId(productId) {
+    return axios.get(`${API_URL}/review/product/${productId}`)
+  }
   
+
   
     

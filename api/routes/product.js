@@ -3,23 +3,6 @@ const router = express.Router();
 const db = require('../database');
 
 
-/*router.get('/stock', async (req, res) => {
-    try {
-        const result = await db.query('SELECT id, stock FROM tfg.products')
-        const stock = result.rows.map(product=> {
-            return {
-                id: product.id,
-                stock: product.stock
-            };
-        });
-        res.status(200).json(stock);
-    }catch (err){
-        console.error('Error fetching stock:', err)
-        res.status(500).json({ error: 'Failed to retrieve stock' })
-    }
-})*/
-
-
 router.get('/products', async (req,res)=>{
 
     try{

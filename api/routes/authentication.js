@@ -15,7 +15,6 @@ router.post('/register', async(req,res)=>{
     const email = req.body.email;
     const password = req.body.password;
     let passwordToStore; //S'utilizarà sols si vull encriptar la contrasenya
-    console.log(' /register endpoint was hit');
     const useEncryption = true;
 
     try{ // check if the user already exists in the database
@@ -26,6 +25,8 @@ router.post('/register', async(req,res)=>{
         if (useEncryption) {
             const salt = await bcrypt.genSalt(10);
             passwordToStore = await bcrypt.hash(password, salt);
+            console.log(passwordToStore);
+            console.log(password);
         } else {
             passwordToStore = password; // Stores plain password (NOT secure, only for testing)
         }
@@ -56,8 +57,6 @@ router.post('/login', async(req,res)=>{
     const email = req.body.email;
     const password = req.body.password;
 
-    console.log('/login endpoint was hit');
-
 
     try{ // check if the user already exists in the database
         const userExists = await database.query('SELECT * FROM tfg.users WHERE email = $1', [email])
@@ -87,8 +86,6 @@ router.post('/login', async(req,res)=>{
     }})
 router.post('/password', authenticateToken, async (req,res)=>{
 
-    console.log("Password endpoint hit")
-    console.log(req.body.newPassword);
 
     const { email, newPassword } = req.body
     if (!email || !newPassword) {

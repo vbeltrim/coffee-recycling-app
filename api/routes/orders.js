@@ -11,13 +11,11 @@ router.get('/orders',authenticateToken, async (req,res) =>{
 
     //First it will be checked whether the request comes from a user or an admin
     const {id, role} = req.user;
-    console.log(id, role);
     //-> userId = req.user.id
     //-> role = req.user.role
     let result;
     try{
         if(role === 'admin'){
-            console.log("you are here")//The req comes from an admin
             result = await database.query(
                 'SELECT o.id AS order_id,o.created_at,o.price,o.status,o.paypal_order_id,o.delivery_address,o.billing_address,\n' +
                 'MAX(CASE WHEN oi.product_id = 1 THEN oi.quantity ELSE 0 END) AS pellets,\n' +
@@ -40,7 +38,6 @@ router.get('/orders',authenticateToken, async (req,res) =>{
                 'ORDER BY o.created_at DESC;',[id]
             );
         }
-       console.log(result.rows);
         res.status(200).json(result.rows);
     }catch (error){
         res.status(500).json({ error: 'Error fetching your orders' });
@@ -53,11 +50,9 @@ router.get('/orders',authenticateToken, async (req,res) =>{
 router.post('/orders', authenticateToken, async (req, res) => {
     const { paypalOrderId, items, price, deliveryAddress, billingAddress } = req.body
     const userId = req.user.id
-    //console.log(paypalOrderId, items, price, deliveryAddress, billingAddress);
     if (!paypalOrderId || !items?.length || !price || !deliveryAddress || !billingAddress) {
         return res.status(400).json({ error: 'Missing order data' })
     }
-    console.log(req.body);
     try {
         const accessToken = await getPaypalAccessToken()
         const paypalRes = await axios.get(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}`, {
@@ -68,8 +63,6 @@ router.post('/orders', authenticateToken, async (req, res) => {
 
         const paypalStatus = paypalRes.data.status
 
-        console.log('PayPal status:', paypalStatus)
-        console.log(paypalStatus)
 
         if (paypalStatus !== 'COMPLETED') {
             return res.status(403).json({ error: 'Payment not completed in PayPal' })
@@ -82,16 +75,12 @@ router.post('/orders', authenticateToken, async (req, res) => {
             const product = productResult.rows[0]
 
             if (!product || product.stock < item.quantity) {
-                console.log('Product'+product.id+'has',product.stock)
-                console.log(item.quantity);
                 return res.status(400).json({ error: `Insufficient stock for product ID ${item.id}` })
             }
 
             calculatedTotal += product.price * item.quantity
         }
         const parsedPrice = parseFloat(price)
-        console.log(parsedPrice)
-        console.log(calculatedTotal)
 
         if (parseFloat(calculatedTotal) !== parseFloat(parsedPrice.toFixed(2))) {
             return res.status(400).json({ error: 'Total price mismatch. Order not created.' })
@@ -100,7 +89,7 @@ router.post('/orders', authenticateToken, async (req, res) => {
         const orderRes = await database.query(
             `INSERT INTO tfg.orders 
        (user_id, price, status, paypal_order_id, delivery_address, billing_address, created_at)
-       VALUES ($1, $2, 'paid', $3, $4, $5, NOW())
+       VALUES ($1, $2, 'Paid', $3, $4, $5, NOW())
        RETURNING id`,
             [userId, price, paypalOrderId, deliveryAddress, billingAddress]
         )
