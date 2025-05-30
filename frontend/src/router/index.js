@@ -12,6 +12,8 @@ const Profile = () => import('@/views/Profile.vue')
 const Collaborate = () => import('@/views/Collaborate.vue')
 const Dashboard = () => import('@/views/Dashboard.vue')
 const Checkout = () => import('@/views/Checkout.vue')
+const Contact = () => import('@/views/Contact.vue')
+const Contacts = () => import('@/views/ContactsList.vue')
 
 const routes = [
   { path: '/', name: 'Homepage', component: Homepage },
@@ -24,6 +26,8 @@ const routes = [
   { path: '/collaborate', name: 'Collaborate', component: Collaborate },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/checkout', name: 'Checkout', component: Checkout },
+  { path: '/contact', name: 'Contact', component: Contact },
+  { path: '/contacts', name: 'Contacts', component: Contacts }
 ]
 
 const router = createRouter({

@@ -1,12 +1,26 @@
-<template>
-    <footer class="footer">
-      <div class="footer-container">
-        <div class="footer-left">
-          <p class="footer-text">© 2025 CoffeeFuel. All rights reserved.</p>
-        </div>
+  <template>
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <p class="footer-text">© 2025 CoffeeFuel. All rights reserved.</p>
       </div>
-    </footer>
-  </template>
+
+      <div class="footer-right">
+        <router-link
+          v-if="!auth.isLoggedIn || auth.role !== 'admin'"
+          to="/contact"
+          class="footer-link"
+        >
+          Contact Us
+        </router-link>
+      </div>
+    </div>
+  </footer>
+</template>
+<script setup>
+  import {useAuthStore} from '@/store/auth'
+  const auth = useAuthStore()
+</script>
   
   <style scoped>
   .footer {
@@ -45,6 +59,23 @@
   
   .footer-link:hover {
     opacity: 0.8;
+    text-decoration: underline;
   }
+  .footer-left {
+  font-size: 0.9rem;
+  color: #4b3b2f;
+}
+
+  .footer-right {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .footer-link {
+    color: #4b3b2f;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
   </style>
   

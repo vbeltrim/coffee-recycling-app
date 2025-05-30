@@ -15,11 +15,13 @@ const collaborate = require('./routes/collaborate');
 const orders = require('./routes/orders')
 const product = require('./routes/product')
 const review = require('./routes/review')
+const contact = require('./routes/contact')
 app.use('/', auth);
 app.use('/', product);
 app.use('/', orders);
 app.use('/', collaborate);
 app.use('/', review);
+app.use('/', contact);
 
 
 // Start server

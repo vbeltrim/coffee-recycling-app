@@ -50,7 +50,7 @@
       console.log(products)
     
       products.value.forEach(product => {
-      quantities.value[product.id] = 0
+        quantities.value[product.id] = 0
       })
       
     } catch (error) {

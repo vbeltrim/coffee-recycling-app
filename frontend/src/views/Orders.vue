@@ -13,8 +13,7 @@
         <p>Status: {{ order.status }}</p>
         <p>Total: €{{ order.price.toFixed(2) }}</p>
         <p>Ordered on: {{ formatDate(order.created_at) }}</p>
-
-        <OrderItem :item="order" />
+        <OrderItem :item="order" :role="auth.role"/>
       </div>
     </div>
   </div>
@@ -26,9 +25,8 @@ import { getOrders } from '@/services/api'
 import OrderItem from '@/components/OrderItem.vue'
 import FilterBar from '@/components/FilterBar.vue'
 import {useAuthStore} from '@/store/auth'
+
 const auth = useAuthStore()
-
-
 
 const orders = ref([])
 const filteredOrders = ref([]) 

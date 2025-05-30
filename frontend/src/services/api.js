@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL
+import { jwtDecode } from 'jwt-decode'
 
 // Register a new user
 export const registerUser = async (userData) => {
@@ -34,10 +35,6 @@ export const registerUser = async (userData) => {
       }
     })
   }
-  export const getStock = async () => {
-    return axios.get(`${API_URL}/stock`)
-  }
-  import { jwtDecode } from 'jwt-decode'
 
   export const getOrders = async () => {
     const token = localStorage.getItem('token')
@@ -69,7 +66,22 @@ export const registerUser = async (userData) => {
   export async function getReviewsByProductId(productId) {
     return axios.get(`${API_URL}/review/product/${productId}`)
   }
+  export const submitContact = async (formData) => {
+    return axios.post(`${API_URL}/contact`, formData)
+  }
+  export const getContacts = async () => {
+    const token = localStorage.getItem('token')
+    const decoded = jwtDecode(token)
   
-
+    return axios.get(`${API_URL}/contact`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: {
+        id: decoded.id,
+        role: decoded.role
+      }
+    })
+  }
   
     

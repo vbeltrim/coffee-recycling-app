@@ -21,7 +21,7 @@
           <input id="repeatPassword" v-model="repeatPassword" type="password" required />
   
           <div class="submit-container">
-            <button type="submit" class="submit-btn">SIGN IN</button>
+            <button type="submit" class="submit-btn">SIGN UP</button>
           </div>
         </form>
       </div>
@@ -59,7 +59,7 @@
         const response = await registerUser(userData)
         const token = response.data.token
         localStorage.setItem('token',token)
-        router.push('/dashboard')
+        router.push('/login')
       } catch (err) {
         console.error('Registration error:', err)
         alert('Registration failed.')
