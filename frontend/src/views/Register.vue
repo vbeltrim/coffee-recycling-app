@@ -23,6 +23,7 @@
           <div class="submit-container">
             <button type="submit" class="submit-btn">SIGN UP</button>
           </div>
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </form>
       </div>
     </div>
@@ -41,8 +42,10 @@
   const email = ref('')
   const password = ref('')
   const repeatPassword = ref('')
+  const errorMessage = ref('')
   
   const handleRegister = async () => {
+       errorMessage.value = ''
       if (password.value !== repeatPassword.value) {
         alert("Passwords don't match.")
         return
@@ -60,11 +63,13 @@
         const token = response.data.token
         localStorage.setItem('token',token)
         router.push('/login')
-      } catch (err) {
-        console.error('Registration error:', err)
-        alert('Registration failed.')
-      }
-
+      } catch (error) {
+          if (error.response && error.response.status === 400) {
+            errorMessage.value = 'User already Exists'
+          } else {
+            errorMessage.value = 'Something went wrong. Please try again later.'
+          }
+        }
   }
   </script>
  <style scoped>
@@ -75,7 +80,10 @@
    align-items: center;
    padding: 2rem;
  }
- 
+ .error-message {
+  color: red;
+  margin-top: 0.5rem;
+}
  .form-wrapper {
    background-color: rgba(255, 250, 240, 0.95);
    padding: 2.5rem;

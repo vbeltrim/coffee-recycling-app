@@ -65,7 +65,7 @@ router.post('/orders', authenticateToken, async (req, res) => {
 
 
         if (paypalStatus !== 'COMPLETED') {
-            return res.status(403).json({ error: 'Payment not completed in PayPal' })
+            return res.status(402).json({ error: 'Payment not completed in PayPal' })
         }
 
         let calculatedTotal = 0
@@ -114,8 +114,6 @@ router.post('/orders', authenticateToken, async (req, res) => {
         console.error('Order creation error:', error)
         res.status(500).json({ error: 'Internal server error' })
    }
-    res.status(201).json({ message: 'Order created successfully'})
-
 
 })
 

@@ -47,7 +47,7 @@ router.post('/review', authenticateToken, async (req, res) => {
             [user_id, order_id, product_id, description, star_rating]
         );
 
-        res.status(200).json({ message: 'Review submitted successfully' });
+        res.status(201).json({ message: 'Review submitted successfully' });
 
     } catch (err) {
         console.error('Error submitting review:', err);

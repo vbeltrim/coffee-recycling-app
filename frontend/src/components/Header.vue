@@ -12,6 +12,7 @@
 
         <template v-if="auth.role === 'admin'">
           <RouterLink class="nav-link" to="/orders">Orders</RouterLink>
+          <RouterLink class="nav-link" to="/contacts">Contacts</RouterLink>
         </template>
 
         <template v-if="auth.role === 'buyer'">

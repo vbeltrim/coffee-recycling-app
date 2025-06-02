@@ -20,13 +20,11 @@ router.post('/register', async(req,res)=>{
     try{ // check if the user already exists in the database
         const userExists = await database.query('SELECT * FROM tfg.users WHERE email = $1', [email])
         if (userExists.rows.length>0){ //Si nhi ha més de 0 vol dir que existeix
-            return res.status(400).json({error: 'User already exists'});
+            return res.status(409).json({error: 'User already exists'});
         }
         if (useEncryption) {
             const salt = await bcrypt.genSalt(10);
             passwordToStore = await bcrypt.hash(password, salt);
-            console.log(passwordToStore);
-            console.log(password);
         } else {
             passwordToStore = password; // Stores plain password (NOT secure, only for testing)
         }
@@ -47,7 +45,6 @@ router.post('/register', async(req,res)=>{
         );
         res.status(201).json({ token });
     } catch (error) {
-        console.error('Registration error:', error);
         res.status(500).json({ error: 'Server error'});
     }
 
@@ -56,13 +53,10 @@ router.post('/register', async(req,res)=>{
 router.post('/login', async(req,res)=>{
     const email = req.body.email;
     const password = req.body.password;
-
-
     try{ // check if the user already exists in the database
         const userExists = await database.query('SELECT * FROM tfg.users WHERE email = $1', [email])
-        if (userExists.rows.length>0){ //Si nhi ha més de 0 vol dir que existeix
-            const match = await bcrypt.compare(password, userExists.rows[0].password);
-            if (match == true){ //True meaning that the password is correct.
+        const match = await bcrypt.compare(password, userExists.rows[0].password)
+        if (userExists.rows.length>0 && match==true){ //Si nhi ha més de 0 vol dir que existeix
                 const token = jwt.sign(
                     {
                         id: userExists.rows[0].id,
@@ -75,13 +69,11 @@ router.post('/login', async(req,res)=>{
                     { expiresIn: '1h' }
                 );
                 res.status(201).json({ token });
-            }
         }
-        else if(userExists.rows.length==0){
+        else{
             return res.status(400).json({error: 'User does not exist or password is not correct'});
         }
     }catch (error) {
-        console.error('Registration error:', error);
         res.status(500).json({error: 'Server error'});
     }})
 router.post('/password', authenticateToken, async (req,res)=>{
