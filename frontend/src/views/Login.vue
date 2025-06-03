@@ -11,6 +11,7 @@
               <label for="password">Password</label>
               <input id="password" v-model="password" type="password" required />
               <button type="submit" class="login-btn">LOG IN</button>
+              <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
             </form>
     
             <div class="signup-link">
@@ -33,6 +34,7 @@
     const router = useRouter()
     const email = ref('')
     const password = ref('')
+    const errorMessage = ref('')
     const auth = useAuthStore()
 
     onMounted( ()=>{
@@ -41,6 +43,7 @@
         } 
     })
     const handleLogin = async () => {
+      errorMessage.value = ''
         try {
             const response = await loginUser({
             email: email.value,
@@ -54,13 +57,14 @@
             else{
                 router.push('/dashboard')
             }
-        }catch (error) {
-            alert('Login failed.')
-            console.error(error)
-            errorMessage.value = 'Invalid email or password'
+          } catch (error) {
+          if (error.response && error.response.status === 400) {
+            errorMessage.value = 'Invalid email or password.'
+          } else {
+            errorMessage.value = 'Something went wrong. Please try again later.'
+          }
         }
-    }
-
+    } //aqui
 
 </script>
 <style scoped>
@@ -70,6 +74,10 @@
   justify-content: center;
   align-items: center;
   padding: 2rem;
+}
+.error-message {
+  color: red;
+  margin-top: 0.5rem;
 }
 
 .form-container {
