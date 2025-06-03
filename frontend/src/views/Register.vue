@@ -1,6 +1,5 @@
 <template>
     <div class="register-page">  
-      <!-- Foreground form -->
       <div class="form-wrapper">
         <div class="form-header">Are you ready?</div>
   

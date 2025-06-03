@@ -10,13 +10,13 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const auth = require('./routes/authentication');
+const authenication = require('./routes/authentication');
 const collaborate = require('./routes/collaborate');
 const orders = require('./routes/orders')
 const product = require('./routes/product')
 const review = require('./routes/review')
 const contact = require('./routes/contact')
-app.use('/', auth);
+app.use('/', authenication);
 app.use('/', product);
 app.use('/', orders);
 app.use('/', collaborate);
