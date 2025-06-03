@@ -68,7 +68,7 @@ router.post('/orders', authenticateToken, async (req, res) => {
     }
 
     //Checks if this paypal_order_id already exists.
-    const orderExists = await database.query('SELECT paypal_order_id FROM tfg.orders WHERE id = $1', [paypalOrderId])
+    const orderExists = await database.query('SELECT paypal_order_id FROM tfg.orders WHERE paypal_order_id = $1', [paypalOrderId])
     if (orderExists.rows.length > 0){
         return res.status(409).json({ error: 'This paypal_order_id is already in use.' }) // STATUS CODE 409, already exists.
     }
