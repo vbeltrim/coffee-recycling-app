@@ -22,6 +22,8 @@
   <script setup>
   import { ref, watch, defineEmits } from 'vue'
   
+  /*The component receives from the orders view the role of the user logged in. In case it is a admin, it will
+  display the searchbar in the filterbar. Otherwise, it is not displayed. */ 
   const props = defineProps({
     role: {
       type: String,
@@ -29,15 +31,15 @@
     }
   })
   
-  const emit = defineEmits(['filter'])
+  const emit = defineEmits(['filter']) //Emits the data inserted in the fields of the FilterBar. The orders view will process the data. 
   
-  const filters = ref({
+  const filters = ref({ //The fields are reactive. For each change, it is emited to the parent component. 
     initialDate: '',
     finalDate: '',
     username: ''
   })
 
-  const resetFilters = () => {
+  const resetFilters = () => { //Resets all fields in the bar. 
     filters.value = {
     initialDate: '',
     finalDate: '',

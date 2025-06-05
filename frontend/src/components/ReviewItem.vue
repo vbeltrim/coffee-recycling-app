@@ -3,18 +3,18 @@
       <div class="review-header">
         <span class="user-name">{{ review.name }}</span>
         <div class="stars">
-          <span
-            v-for="n in 5"
+          <span 
+            v-for="n in review.star_rating"
             :key="n"
             class="star"
-          >★</span>
+          >★</span><!--Displays n number of stars depending on the star_rating of the review.  --> 
         </div>
       </div>
       <p class="review-text">{{ review.description }}</p>
     </div>
   </template>
   
-  <script setup>
+  <script setup> //Receives a review as object from the parent component (ReviewList). Is will display the name of the user that has avaluated it along with the description. 
   defineProps({
     review: Object
   })

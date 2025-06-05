@@ -27,8 +27,8 @@
   import { useAuthStore } from '@/store/auth'
   import { postReview } from '@/services/api'
   
-  const props = defineProps({
-    orderId: { type: Number, required: true },
+  const props = defineProps({ //From the parent component (orderItem) it is passed the props. 
+    orderId: { type: Number, required: true }, //Orderid is used to make a http request to post this review. 
     productType: { type: String, required: true }
   })
   
@@ -39,28 +39,30 @@
   const star_rating = ref('')
   const errorMessage = ref('')
   
-  const productTypeLabel = computed(() => {
+  const productTypeLabel = computed(() => { //Displays Pellets or logs depending on the prop passed is "Pellets". 
     return props.productType === 'pellets' ? 'Pellets' : 'Logs'
   })
   
-  async function submitReview() {
-    if (!description.value || !star_rating.value) {
+  async function submitReview() { //Triggered when clicked the submit button
+    if (!description.value || !star_rating.value) { //Checks whether the mandatory fields are fillet. //This along with the order_id and product_id will be the body of the request. 
       errorMessage.value = 'Please fill out all fields.'
       return
     }
   
     try {
-      const productId = props.productType === 'pellets' ? 1 : 2 // Map product type to actual IDs
-      await postReview({
+      const productId = props.productType === 'pellets' ? 1 : 2 // Sets 1 for pellets, 2 for logs.  
+      await postReview({  // sends and api request with the following fields that will become the body. The api.js will add the authorization header. 
         order_id: props.orderId,
         product_id: productId,
         description: description.value,
         star_rating: parseInt(star_rating.value)
       })
   
-      emit('close')
+      emit('close') //Sends a close request to the parent component (orderItem) to close the modal. 
     } catch (err) {
-      if (err.response?.status === 409) {
+      /*the backend may respond with several errors, if 409 means that the current logged in user has already reviewed this item
+      The 403 means that somehow the user is trying to evaluate a product that has not been delivered yet. */ 
+      if (err.response?.status === 409) { 
         errorMessage.value = 'You have already reviewed this product.'
       } else if (err.response?.status === 403) {
         errorMessage.value = 'You can only review products from delivered orders.'

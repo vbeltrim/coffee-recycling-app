@@ -14,7 +14,9 @@ function authenticateToken(req, res, next) {
     if (!token) return res.status(401).json({ error: 'Access denied: You do not have any token' }); //if it is false, return error 401
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => { // The token is verified with the SECRET in the defined in .env
-        if (err) return res.status(401).json({ error: 'Invalid token' }); //If it is not valid, return error 401.
+        if (err){
+            return res.status(401).json({ error: 'Invalid token' }); //If it is not valid, return error 401.
+        }
         req.user = user; // Adds the user information on the req. Accessed on req.user.
         next(); //The endpoint function handles the http request now.
     });

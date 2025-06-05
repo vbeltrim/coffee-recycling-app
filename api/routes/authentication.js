@@ -65,18 +65,20 @@ router.post('/register', async(req,res)=>{
 * Checks if the user exists on the database, meaning if it has already signed up and if exists, returns a token */
 router.post('/login', async(req,res)=>{
 
-
     const email = req.body.email;
     const password = req.body.password;
 
-
+/*The idea is to return the same error whenever the email or password is not correct.
+This way the user has no clue whether what is failing is one or the other.*/
     try{
-
         const userExists = await database.query('SELECT * FROM tfg.users WHERE email = $1', [email]) //Checks if the euser exists on the database
 
-        const match = await bcrypt.compare(password, userExists.rows[0].password) // Compares the passwords, remember the one on the db is encrypted.
+        if (userExists.rows.length==0){ //If the email does not exist, returns error
+            return res.status(400).json({error: 'User does not exist or password is not correct'}); // STATUS ERROR 400, either there is an error on the email or the password
+        }
+        const match = await bcrypt.compare(password, userExists.rows[0].password) //Password correct, check password.
 
-        if (userExists.rows.length>0 && match==true){  //If the user exists and the password matches, the user will be able to sign in.
+        if (userExists.rows.length>0 && match==true){  //If both exist and the password is correct, creates the token.
                 const token = jwt.sign( //It creates a token
                     {
                         id: userExists.rows[0].id,
@@ -88,9 +90,9 @@ router.post('/login', async(req,res)=>{
                     process.env.JWT_SECRET,
                     { expiresIn: '1h' }
                 );
-                res.status(201).json({ token }); // Returns the STATUS CODE 201, including the token on the res.body
+                res.status(201).json({ token }); // Returns STATUS CODE 201, including the token on the res.body
         }
-        else{
+        else if (match==false){ //If the password is not correct, returns STATUS CODE 400.
             return res.status(400).json({error: 'User does not exist or password is not correct'}); // STATUS ERROR 400, either there is an error on the email or the password
         }
     }catch (error) {
@@ -102,12 +104,21 @@ router.post('/login', async(req,res)=>{
 * Once confirmed, it will be checked that the body contains the required fields. If it does, the password will be changed.*/
 router.post('/password', authenticateToken, async (req,res)=>{
 
-    const { newPassword } = req.body //The password is the same as the one on the req.body
+    //The email must be the one added by the middleware. Otherwise, anyone with a valid token could change someone else' password.
+    const {email} = req.user;
+    const {currentPassword,newPassword } = req.body
 
-    const {email} = req.user; //The email must be the one added by the middleware. Otherwise, anyone with a valid token could change someone else' password.
-
-    if (!email || !newPassword) { //Check fields, otherwise return STATUS CODE 400. Missing fields.
+    //First check if the fields are present.
+    if (!email || !newPassword || !currentPassword) { //Check fields, otherwise return STATUS CODE 400. Missing fields.
         return res.status(400).json({ error: 'Missing fields' })
+    }
+    //We get the user so that we can check the password.
+    const getUser = await database.query('SELECT * FROM tfg.users WHERE email = $1', [email])
+    //Check if the password is correct.
+    const match = await bcrypt.compare(currentPassword, getUser.rows[0].password)
+
+    if(match==false){ //Check if the password is correct. If not, return error.
+        return res.status(400).json({error: 'Current password is not correct'})
     }
     try{
 

@@ -6,7 +6,7 @@
         <p>No contact messages found.</p>
       </div>
   
-      <div v-else class="messages-list">
+      <div v-else class="messages-list"> <!--List of messages received. -->
         <div v-for="msg in messages" :key="msg.id" class="message-card">
           <p><strong>Name:</strong> {{ msg.name }} {{ msg.surname }}</p>
           <p><strong>Email:</strong> {{ msg.email }}</p>
@@ -28,22 +28,22 @@
   const router = useRouter()
   const messages = ref([])
   
-  onMounted(async () => {
-    if (auth.role !== 'admin') {
+  onMounted(async () => {  //The page can only be accessed by admin users in case the user has another role, send to homepage. 
+    if (auth.role !== 'admin') { 
       router.push({ name: 'Homepage' })
       return
     }
   
-    try {
+    try { //Otherwise, api request to get all the contacts made to the platform. 
       const res = await getContacts()
-      messages.value = res.data
+      messages.value = res.data //Assign the messages value to the api response data.
     } catch (err) {
       console.error('Failed to load contact messages:', err)
     }
   })
   
   function formatDate(dateStr) {
-    const d = new Date(dateStr)
+    const d = new Date(dateStr) //Formats the date to the appropriate format. 
     return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
   }
   </script>

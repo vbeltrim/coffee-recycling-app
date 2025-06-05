@@ -6,7 +6,7 @@
       <p>No orders found</p>
     </div>
 
-    <div v-else class="orders-list">
+    <div v-else class="orders-list"> <!-- If there are orders, it displays the filter bar + the order items-->
       <FilterBar :role="auth.role" @filter="applyFilter" />
       <div v-for="order in filteredOrders" :key="order.order_id" class="order-card">
         <p><strong>Order #{{ order.order_id }}</strong></p>
@@ -20,20 +20,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted} from 'vue'
 import { getOrders } from '@/services/api'
 import OrderItem from '@/components/OrderItem.vue'
 import FilterBar from '@/components/FilterBar.vue'
 import {useAuthStore} from '@/store/auth'
+import { useRouter } from 'vue-router'
 
 const auth = useAuthStore()
-
+const router = useRouter()
 const orders = ref([])
-const filteredOrders = ref([]) 
+const filteredOrders = ref([])  //Filtered orders contains the orders that pass the filter provided by the filterbar. 
 
 
-const applyFilter = (filters) => {
-  filteredOrders.value = orders.value.filter(order => {
+const applyFilter = (filters) => { //Apply filter is emited by the filter bar with the filter characteristics. Start date, end date, and depending on role user. 
+  filteredOrders.value = orders.value.filter(order => { //The value of filter orders will be the one after applying all the filters. 
     const orderDate = new Date(order.created_at)
     const matchesStart = filters.initialDate ? orderDate >= new Date(filters.initialDate) : true
     const matchesEnd = filters.finalDate ? orderDate <= new Date(filters.finalDate) : true
@@ -44,17 +45,23 @@ const applyFilter = (filters) => {
     return matchesStart && matchesEnd && matchesUser
   })
 }
-
 onMounted(async () => {
-  try {
-    const response = await getOrders()
-    orders.value = response.data
-    filteredOrders.value = [...response.data]
-  } catch (err) {
-    console.error('Failed to load orders:', err)
+  if (!auth.isLoggedIn){ //If the user is not logged in, it should push to Homepage
+    router.push('/')
+  }
+  else{ //Whether it is an admin or buyer. 
+    try {
+
+        const response = await getOrders() //Http request  to get the list of orders. If admin, list of all orders. Else, the list just for the user. 
+        orders.value = response.data //The response is copied to orders. 
+        filteredOrders.value = [...response.data] //Shallow operator
+
+      } catch (err) {
+        console.error('Failed to load orders:', err)
+      }
   }
 })
-
+/* Takes the JS date object and returns a new more readible.  */
 function formatDate(dateStr) {
   const d = new Date(dateStr)
   return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()

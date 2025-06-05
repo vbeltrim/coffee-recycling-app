@@ -1,4 +1,4 @@
-<template>
+<template> <!--The options displayed in the Header depend on the role of the user, and whether the user is logged in -->
   <header class="header">
     <nav class="nav-container">
 
@@ -44,8 +44,9 @@ import { storeToRefs } from 'pinia'
 const auth = useAuthStore()
 const { isLoggedIn, role } = storeToRefs(auth) 
 const router = useRouter()
-
-const handleLogout = () => {
+/*// Once the user wants to log out, the user clicks on the OUT button which triggers the function. The function calls the logout method on the auth store, 
+which makes effective the logout. For the sake of UX, the router displayes the Homepage. */
+const handleLogout = () => { 
   auth.logout()
   router.push('/')
 }

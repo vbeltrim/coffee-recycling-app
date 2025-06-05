@@ -1,7 +1,7 @@
 <template>
     <div class="product-card">
       <div class="quantity-container">
-        <div class="quantity-selector">
+        <div v-if="role!='admin'" class="quantity-selector">
           <button @click="decrease">−</button>
           <span class="quantity">{{ quantity }}</span>
           <button @click="increase">+</button>
@@ -35,35 +35,33 @@
   
   <script setup>
   import { ref, watch } from 'vue'
-  import ReviewList from '@/views/ReviewList.vue';
+  import ReviewList from '@/components/ReviewList.vue';
 
-  const image = ref([]);
-  const showModal = ref(false)
-  const props = defineProps({
+  const image = ref([]); 
+  const showModal = ref(false) //The modal dislpays the reviews made of that product. 
+  const props = defineProps({ 
   product: Object,
-  modelValue: Number
+  modelValue: Number,
+  role: String
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue']) 
   const quantity = ref(props.modelValue ?? 0)
 
-  const increase = () => {
+  const increase = () => {//Decreses the number of units selected from such product. 
   quantity.value++
-  emit('update:modelValue', quantity.value)
+  emit('update:modelValue', quantity.value) //Emits a change in the modelValue which is binded to the v-model in the parent component. 
 }
 
-const decrease = () => {
+const decrease = () => { //Decreses the number of units selected from such product. 
   if (quantity.value > 0) {
     quantity.value--
-    emit('update:modelValue', quantity.value)
+    emit('update:modelValue', quantity.value) //The number of units is emitted to the parent component. 
   }
 }
-watch(() => props.modelValue, val => {
+watch(() => props.modelValue, val => { //checks whether there is any change in the quantity selected. 
   quantity.value = val
 })
 
-const toggleDetails = () => {
-    showDetails.value = !showDetails.value
-}
 </script>
   
 <style scoped>

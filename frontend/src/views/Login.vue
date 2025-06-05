@@ -38,30 +38,31 @@
     const auth = useAuthStore()
 
     onMounted( ()=>{
-        if (auth.isLoggedIn){
+        if (auth.isLoggedIn){ //If the user is loggedIn, push to dashboard.
             router.push("/dashboard")
         } 
     })
-    const handleLogin = async () => {
+    /*When the user clicks on LOG IN, they trigger the handleLogin function. */
+    const handleLogin = async () => { 
       errorMessage.value = ''
         try {
-            const response = await loginUser({
-            email: email.value,
+            const response = await loginUser({ // the responso to the api request is saved on "response"
+            email: email.value, //The req uses email and password to authenticate the user. 
             password: password.value
             })
             const token = response.data.token
-            auth.login(token)
-            if(auth.role == "admin"){
+            auth.login(token) //The token provided in a success response is passed as argument to the auth pinia store. 
+            if(auth.role == "admin"){ // If the role provided by the auth store is admin. They are pushed to the orders. 
                 router.push('/orders');
             }
             else{
-                router.push('/dashboard')
+                router.push('/dashboard') //In case they are a "buyer", they are pushed to dashboard
             }
           } catch (error) {
-          if (error.response && error.response.status === 400) {
+          if (error.response && error.response.status === 400) { //If the api responds with a 400 STATUS CODE it means either the password or the mail are not correct.
             errorMessage.value = 'Invalid email or password.'
           } else {
-            errorMessage.value = 'Something went wrong. Please try again later.'
+            errorMessage.value = 'Something went wrong. Please try again later.' //Any other error that can be provided by this endpoint (e.g 500 server error), returns this message. 
           }
         }
     } //aqui

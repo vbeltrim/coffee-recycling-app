@@ -18,6 +18,7 @@
   </footer>
 </template>
 <script setup>
+//The footer simply uses the authStore to check is the user is an admin or not. In case it is, it will not display the ContactUs link. 
   import {useAuthStore} from '@/store/auth'
   const auth = useAuthStore()
 </script>
