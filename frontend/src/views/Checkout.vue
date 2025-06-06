@@ -15,7 +15,6 @@
         <label>Billing Address:</label>
         <input type="text" v-model="billingAddress" placeholder="e.g. Same as delivery" />
 
-        <!-- Product list -->
         <div class="checkout-list">
           <div class="checkout-item" v-for="item in items" :key="item.id">
             <div class="item-name">{{ item.name }}</div>
@@ -61,13 +60,7 @@ const goBackToProducts = () => {
 }
 
 onMounted(() => {
-  if (auth.role != 'buyer'){
-    router.push({ name: 'Login' })
-    return
-  }
- 
   const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID
-  console.log(clientId)
   const script = document.createElement('script')
   script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=EUR`
   script.onload = initPayPalButtons
@@ -78,6 +71,17 @@ function initPayPalButtons() {
   if (!window.paypal || items.value.length === 0) return
 
   window.paypal.Buttons({
+    onInit: function (data, actions) {
+
+
+    watchEffect(() => {
+      if (deliveryAddress.value.trim() !== '' && billingAddress.value.trim() !== '') {
+        actions.enable()
+      } else {
+        actions.disable()
+      }
+    })
+  },
     createOrder: (data, actions) => {
       return actions.order.create({
         purchase_units: [{
@@ -88,18 +92,16 @@ function initPayPalButtons() {
       })
     },
     onApprove: async (data, actions) => {
+      
       const details = await actions.order.capture()
 
-      
-      if (!deliveryAddress.value || !billingAddress.value) {
-        alert('Please enter both delivery and billing addresses.')
-        return
-      }
+    
       const cleanItems = items.value.map(item => ({
         id: item.id.toString(),        
         quantity: item.quantity.toString()  
       }))
-      const orderPayload = {
+
+      const orderPayload = { //The payload of the http request contains the following fields. 
         paypalOrderId: data.orderID,
         items: cleanItems,
         price: total.value.toFixed(2),
@@ -107,16 +109,16 @@ function initPayPalButtons() {
         billingAddress: billingAddress.value
       }
       await createOrder(orderPayload)
-
-      alert(`Payment completed by ${details.payer.name.given_name}!`)
       cart.clearCart()
-      router.push('/products')
+      /*In case everything is fine, then pushed to the ThankYou page with the following messages*/
+      router.push({ name: 'Success', query: { message: 'Thank you for your purchase!', subMessage: 'Your order has been processed.' } })
     },
     onError: (err) => {
+      /*In case of error, is sent to the Error page with this message. */
+      router.push({ name: 'Error', query: { message: 'There has been an error', subMessage: 'Your order has not been processed.' } })
       console.error('PayPal error:', err)
-      alert('Payment failed.')
     }
-  }).render('#paypal-button-container')
+  }).render('#paypal-button-container') //It is rendered into this container
 }
 </script>
 

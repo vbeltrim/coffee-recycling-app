@@ -1,7 +1,3 @@
-<script setup>
-import image2 from '/images/coffee-waste.webp'
-</script>
-
 <template>
   <div class="content-section">
     <div class="overlay">
@@ -18,13 +14,12 @@ import image2 from '/images/coffee-waste.webp'
         <p>Whether you care about reducing emissions, minimizing your environmental impact, or simply heating your home efficiently, CoffeeFuel is here to make it easy. Join us in rethinking waste and fueling a better future — one cup at a time.</p>
         </div>
         <div class="image-section">
-          <img :src="image2" alt="Recycling coffee grounds" />
+          <img src="/images/coffee-waste.webp" alt="Recycling coffee grounds" />
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <style scoped>
 

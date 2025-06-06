@@ -28,12 +28,8 @@
   const router = useRouter()
   const messages = ref([])
   
-  onMounted(async () => {  //The page can only be accessed by admin users in case the user has another role, send to homepage. 
-    if (auth.role !== 'admin') { 
-      router.push({ name: 'Homepage' })
-      return
-    }
-  
+  onMounted(async () => { 
+
     try { //Otherwise, api request to get all the contacts made to the platform. 
       const res = await getContacts()
       messages.value = res.data //Assign the messages value to the api response data.

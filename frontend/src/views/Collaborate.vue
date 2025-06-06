@@ -30,8 +30,9 @@
   import {submitCollaboration} from '@/services/api'
   import { useRouter } from 'vue-router'
   const router = useRouter()
-  
-  const form = ref({
+
+  /* Reactive form. It will keep track of all the fields in the html form. */ 
+  const form = ref({ 
     name: '',
     surname: '',
     email: '',
@@ -39,15 +40,14 @@
     message: ''
   })
   
-  const submitForm = async () => {
+  const submitForm = async () => { //Http request to send the form. 
   try {
     await submitCollaboration(form.value)
-    alert('Thank you for your message! We will get back to you soon.')
-    router.push({name:'Homepage'})
+    //If no error is found, go to the success screen and print this messages passed as queries. 
+    router.push({ name: 'Success', query: { message: 'Thank you for your purchase!', subMessage: 'Your order has been processed.' } })
   } catch (err) {
-    alert('Something went wrong while submitting your message.')
-    console.error(err)
-    router.push({name:'Homepage'})
+    //If any error is found, go to error screen with this messages.
+    router.push({ name: 'Error', query: { message: 'There has been an error', subMessage: 'Try again later' } })
   }
 }
   </script>

@@ -34,7 +34,7 @@ const filteredOrders = ref([])  //Filtered orders contains the orders that pass 
 
 
 const applyFilter = (filters) => { //Apply filter is emited by the filter bar with the filter characteristics. Start date, end date, and depending on role user. 
-  filteredOrders.value = orders.value.filter(order => { //The value of filter orders will be the one after applying all the filters. 
+  filteredOrders.value = orders.value.filter(order => { //he value of filter orders will be the one after applying all the filters. 
     const orderDate = new Date(order.created_at)
     const matchesStart = filters.initialDate ? orderDate >= new Date(filters.initialDate) : true
     const matchesEnd = filters.finalDate ? orderDate <= new Date(filters.finalDate) : true
@@ -45,13 +45,8 @@ const applyFilter = (filters) => { //Apply filter is emited by the filter bar wi
     return matchesStart && matchesEnd && matchesUser
   })
 }
-onMounted(async () => {
-  if (!auth.isLoggedIn){ //If the user is not logged in, it should push to Homepage
-    router.push('/')
-  }
-  else{ //Whether it is an admin or buyer. 
+onMounted(async () => { 
     try {
-
         const response = await getOrders() //Http request  to get the list of orders. If admin, list of all orders. Else, the list just for the user. 
         orders.value = response.data //The response is copied to orders. 
         filteredOrders.value = [...response.data] //Shallow operator
@@ -59,7 +54,6 @@ onMounted(async () => {
       } catch (err) {
         console.error('Failed to load orders:', err)
       }
-  }
 })
 /* Takes the JS date object and returns a new more readible.  */
 function formatDate(dateStr) {

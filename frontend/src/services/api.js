@@ -41,13 +41,13 @@ api.interceptors.request.use((config) => {
 
 // Register a new user
   export const registerUser = async (userData) => {
-    return axios.post(`${API_URL}/register`, userData)
+    return api.post('/register', userData)
   }
   
 
   //Gets all the products for sale from the database. 
   export const getProducts = async => {
-    return axios.get(`${API_URL}/products`)
+    return api.get('/products')
   }
   //Updates the password from a user. The user must be logged in.
  export const updatePassword = async ({currentPassword, newPassword }) => {

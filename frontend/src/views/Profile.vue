@@ -1,10 +1,12 @@
 <template>
+  
   <div class="profile-container">
     <h2>My Profile</h2>
+    <div v-if="auth.user">
     <form @submit.prevent="handlePasswordChange">
       <div class="form-group">
         <label for="name">Name</label>
-        <input id="name" type="text" :value="user.name" disabled />
+        <input id="name" type="text" :value=user.name disabled />
       </div>
 
       <div class="form-group">
@@ -18,6 +20,11 @@
       </div>
 
       <div class="form-group">
+        <label for="current-password">Current Password</label>
+        <input id="current-password" v-model="currentPassword" type="password" />
+      </div>
+
+      <div class="form-group">
         <label for="new-password">New Password</label>
         <input id="new-password" v-model="newPassword" type="password" />
       </div>
@@ -26,19 +33,19 @@
         <label for="repeat-password">Repeat Password</label>
         <input id="repeat-password" v-model="repeatPassword" type="password" />
       </div>
-
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       <button type="submit">Change Password</button>
-
       <p v-if="error" class="error-message">{{ error }}</p>
       <p v-if="success" class="success-message">Password updated!</p>
     </form>
+    </div>
   </div>
 </template>
 
   
 <script setup>
-  import { ref } from 'vue'
-  import { useAuthStore } from '@/store/auth'
+  import { ref, onMounted } from 'vue'
+  import {useAuthStore} from '@/store/auth'
   import { updatePassword } from '@/services/api'
   import { useRouter } from 'vue-router'
   
@@ -46,26 +53,30 @@
   const auth = useAuthStore()
   
   const user = auth.user
+  const currentPassword = ref('')
   const newPassword = ref('')
   const repeatPassword = ref('')
   const error = ref('')
   const success = ref(false)
-  
+  const errorMessage = ref('')
+
   const handlePasswordChange = async () => {
     error.value = ''
     success.value = false
   
     if (!newPassword.value || newPassword.value !== repeatPassword.value) {
-      error.value = 'Passwords must match and cannot be empty.'
+      errorMessage.value = 'Passwords must match and cannot be empty.'
       return
     }
   
     try {
-      await updatePassword(user.value.email, newPassword.value)
+      await updatePassword({
+         currentPassword: currentPassword.value,
+         newPassword: newPassword.value})
       success.value = true
-      router.push({ name: 'Dashboard' })
+      router.push({ name: 'Success', query: { message: 'Success', subMessage: 'Your password has been changed successfully' } })
     } catch (err) {
-      alert('Error updating password')
+      router.push({ name: 'Error', query: { message: 'Error', subMessage: 'There has been an error with your request. Try again later' } })
       console.error(err)
     }
   }

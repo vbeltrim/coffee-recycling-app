@@ -11,27 +11,6 @@
   </div>
 </template>
   
-<script setup>
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/store/auth'
-
-const router = useRouter()
-const auth = useAuthStore()
-
-const name = auth.name
-const isLoggedIn = auth.isLoggedIn
-const role = auth.role
-
-onMounted(() => {
-
-  console.log(isLoggedIn,role)
-  if (!isLoggedIn || role =='admin') {
-    router.push({ name: 'Homepage' })
-  }
-})
-</script>
-
 <style scoped>
 .dashboard-wrapper {
   max-width: 800px;

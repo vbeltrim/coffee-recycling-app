@@ -26,7 +26,7 @@
   
 
 <script setup>
-    import { ref, onMounted} from 'vue'
+    import { ref} from 'vue'
     import { useRouter } from 'vue-router'
     import { loginUser } from '@/services/api'
     import { useAuthStore } from '@/store/auth'
@@ -37,11 +37,7 @@
     const errorMessage = ref('')
     const auth = useAuthStore()
 
-    onMounted( ()=>{
-        if (auth.isLoggedIn){ //If the user is loggedIn, push to dashboard.
-            router.push("/dashboard")
-        } 
-    })
+
     /*When the user clicks on LOG IN, they trigger the handleLogin function. */
     const handleLogin = async () => { 
       errorMessage.value = ''
