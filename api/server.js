@@ -8,7 +8,7 @@ const app = express();
 // Middleware
 app.use(cors({
     origin: 'https://coffee-fuel.web.app', // explicitly set the frontend origin
-    credentials: trus
+    credentials: true
 }))
 app.use(express.json());
 
