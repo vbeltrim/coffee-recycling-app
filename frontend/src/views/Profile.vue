@@ -33,7 +33,9 @@
         <label for="repeat-password">Repeat Password</label>
         <input id="repeat-password" v-model="repeatPassword" type="password" />
       </div>
+
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
       <button type="submit">Change Password</button>
       <p v-if="error" class="error-message">{{ error }}</p>
       <p v-if="success" class="success-message">Password updated!</p>
@@ -74,7 +76,7 @@
          currentPassword: currentPassword.value,
          newPassword: newPassword.value})
       success.value = true
-      router.push({ name: 'Success', query: { message: 'Success', subMessage: 'Your password has been changed successfully' } })
+      router.push({ name: 'Success', query: { message: 'Success', subMessage: 'Your password has been changed successfully', redirectTo:'Dashboard' } })
     } catch (err) {
       router.push({ name: 'Error', query: { message: 'Error', subMessage: 'There has been an error with your request. Try again later' } })
       console.error(err)
@@ -125,6 +127,11 @@ input {
 input:disabled {
   background-color: #f3eee6;
   color: #6a5c51;
+}
+.error-message {
+  color: red;
+  text-align: center;
+  margin: 2rem;
 }
 
 button {

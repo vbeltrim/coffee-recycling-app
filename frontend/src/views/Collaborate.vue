@@ -44,7 +44,7 @@
   try {
     await submitCollaboration(form.value)
     //If no error is found, go to the success screen and print this messages passed as queries. 
-    router.push({ name: 'Success', query: { message: 'Thank you for your purchase!', subMessage: 'Your order has been processed.' } })
+    router.push({ name: 'Success', query: { message: 'Thanks for reaching us', subMessage: 'We will get back to you soon' } })
   } catch (err) {
     //If any error is found, go to error screen with this messages.
     router.push({ name: 'Error', query: { message: 'There has been an error', subMessage: 'Try again later' } })

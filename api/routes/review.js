@@ -49,6 +49,7 @@ router.post('/review', authenticateToken, async (req, res) => {
         res.status(201).json({ message: 'Review submitted successfully' }); //STATUS CODE, 201 SUCCESS
 
     } catch (err) {
+        console.log('You are here;')
         res.status(500).json({ message: 'Internal server error' }); //STATUS CODE 500, ERROR
     }
 });

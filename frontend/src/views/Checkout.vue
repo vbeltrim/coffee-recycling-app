@@ -72,15 +72,7 @@ function initPayPalButtons() {
 
   window.paypal.Buttons({
     onInit: function (data, actions) {
-
-
-    watchEffect(() => {
-      if (deliveryAddress.value.trim() !== '' && billingAddress.value.trim() !== '') {
-        actions.enable()
-      } else {
-        actions.disable()
-      }
-    })
+      actions.enable()
   },
     createOrder: (data, actions) => {
       return actions.order.create({
@@ -111,7 +103,7 @@ function initPayPalButtons() {
       await createOrder(orderPayload)
       cart.clearCart()
       /*In case everything is fine, then pushed to the ThankYou page with the following messages*/
-      router.push({ name: 'Success', query: { message: 'Thank you for your purchase!', subMessage: 'Your order has been processed.' } })
+      router.push({ name: 'Success', query: { message: 'Thank you for your purchase!', subMessage: 'Your order has been processed.', redirectTo:'Orders'} })
     },
     onError: (err) => {
       /*In case of error, is sent to the Error page with this message. */

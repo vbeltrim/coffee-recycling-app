@@ -26,6 +26,7 @@
   import { ref,computed } from 'vue'
   import { useAuthStore } from '@/store/auth'
   import { postReview } from '@/services/api'
+  import { useRouter } from 'vue-router'
   
   const props = defineProps({ //From the parent component (orderItem) it is passed the props. 
     orderId: { type: Number, required: true }, //Orderid is used to make a http request to post this review. 
@@ -38,6 +39,7 @@
   const description = ref('')
   const star_rating = ref('')
   const errorMessage = ref('')
+  const router = useRouter()
   
   const productTypeLabel = computed(() => { //Displays Pellets or logs depending on the prop passed is "Pellets". 
     return props.productType === 'pellets' ? 'Pellets' : 'Logs'
@@ -57,8 +59,8 @@
         description: description.value,
         star_rating: parseInt(star_rating.value)
       })
-  
-      emit('close') //Sends a close request to the parent component (orderItem) to close the modal. 
+      //emit('close') //Sends a close request to the parent component (orderItem) to close the modal. 
+      router.push({ name: 'Success', query: { message: 'Thanks for the Review', subMessage: 'Reviews help us improve' } })
     } catch (err) {
       /*the backend may respond with several errors, if 409 means that the current logged in user has already reviewed this item
       The 403 means that somehow the user is trying to evaluate a product that has not been delivered yet. */ 
@@ -67,6 +69,7 @@
       } else if (err.response?.status === 403) {
         errorMessage.value = 'You can only review products from delivered orders.'
       } else {
+        console.log(err)
         errorMessage.value = 'An error occurred. Please try again.'
       }
     }

@@ -18,11 +18,12 @@
   
           <label for="repeatPassword">Repeat Password</label>
           <input id="repeatPassword" v-model="repeatPassword" type="password" required />
-  
+          
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
           <div class="submit-container">
             <button type="submit" class="submit-btn">SIGN UP</button>
           </div>
-          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </form>
       </div>
     </div>
@@ -32,9 +33,10 @@
   import { ref } from 'vue'
   import { registerUser } from '@/services/api'
   import { useRouter } from 'vue-router'
+  import {useAuthStore} from '@/store/auth'
   
-
   
+  const auth = useAuthStore()
   const router = useRouter()
   const name = ref('')
   const surname = ref('')
@@ -46,7 +48,7 @@
   const handleRegister = async () => {
        errorMessage.value = ''
       if (password.value !== repeatPassword.value) {
-        alert("Passwords don't match.")
+        errorMessage.value = "Passwords don't match."
         return
       }
 
@@ -60,10 +62,10 @@
       try {
         const response = await registerUser(userData)
         const token = response.data.token
-        localStorage.setItem('token',token)
-        router.push('/login')
+        //router.push({name: Dashboard});
+        router.push({ name: 'Success', query: { message: 'Welcome to the family', subMessage: 'Thanks for being part of our community', redirectTo:'Login' } })
       } catch (error) {
-          if (error.response && error.response.status === 400) {
+          if (error.response && error.response.status === 409) {
             errorMessage.value = 'User already Exists'
           } else {
             errorMessage.value = 'Something went wrong. Please try again later.'
@@ -81,6 +83,7 @@
  }
  .error-message {
   color: red;
+  text-align: center;
   margin-top: 0.5rem;
 }
  .form-wrapper {

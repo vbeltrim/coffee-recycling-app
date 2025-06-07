@@ -10,7 +10,13 @@
     </div>
   </div>
 </template>
-  
+<script setup>
+//In order to announce the name of the user, it has to be imported the auth store to propertly retrieve it from there.
+import { useAuthStore } from '@/store/auth'
+const auth = useAuthStore() 
+
+const name = auth.name;
+</script>
 <style scoped>
 .dashboard-wrapper {
   max-width: 800px;

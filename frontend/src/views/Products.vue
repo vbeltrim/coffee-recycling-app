@@ -1,8 +1,8 @@
 <template>
   <div class="overlay">
     <div class="products-wrapper">
-      <div class="content-layer">
-        <h1 class="products-title">Products</h1>
+      <div v-if="!connectionProblem" class="content-layer">
+        <h1 class="title">Products</h1>
 
         <div class="products-container"> 
           <!--Displays the list of the avaliable products to be purchased. The role is passed to the child to tell to restrinct the admin role to see different parts.-->
@@ -20,6 +20,10 @@
             Buy Selected Items
           </button>
         </div>
+      </div>
+      <div v-else class="error-container">
+        <h1 class="title">We're having trouble loading the products</h1>
+        <img src="@/images/network-error.png" alt="Network error" class="error-icon" />
       </div>
     </div>
   </div>
@@ -42,6 +46,7 @@
   const auth = useAuthStore()
   const cart = useCartStore()
   const warningMessage = ref('')
+  const connectionProblem = ref(false)
 
   onMounted(async () => { 
     try {
@@ -59,6 +64,7 @@
       
     } catch (error) {
       console.error('Error fetching products:', error)
+      connectionProblem.value=true; //If there is a connection 
     }
 
   })
@@ -104,14 +110,15 @@
   </script>
   
   <style scoped>
+
+
 .overlay {
-  
   backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.75);
   padding: 3rem 2rem;
   border-radius: 20px;
   max-width: 1100px;
-  margin: 4rem auto;
+  margin: auto;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   justify-content: center;
   background-color: #f4e6d9;
@@ -131,7 +138,7 @@
   width: 100%;
 }
 
-.products-title {
+.title {
   font-size: 2.5rem;
   text-align: center;
   color: #4b3b2f;
@@ -147,6 +154,15 @@
   width: 100%;
   max-width: 800px; 
   margin: 0 auto;
+}
+.error-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+.error-icon {
+  width: 300px;
+  height: auto;
+  margin-bottom: 1rem;
 }
 
 

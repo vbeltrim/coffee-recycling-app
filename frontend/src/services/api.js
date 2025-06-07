@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL
-import { jwtDecode } from 'jwt-decode'
 import {useAuthStore} from '@/store/auth'
 
 
@@ -10,7 +9,7 @@ const api = axios.create({
   withCredentials: true,
 })
 
-//Set interceptors to check whether is received a 401 CODE from the backend. Meaning the user is not authorized. Then I should redirect 
+//Set interceptors to check whether is received a 401 CODE from the backend. Meaning the user is not authorized. Then they should be redirected. 
 api.interceptors.response.use(
   response => response,
   error => {
@@ -56,28 +55,10 @@ api.interceptors.request.use((config) => {
     newPassword
   })
 }
-   
-  /*export const updatePassword = async (email, newPassword) => {
-    const token = localStorage.getItem('token')
-    return axios.post(`${API_URL}/password`, 
-      { email, newPassword},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    )
-  }*/
+  
   //Creates a new order. 
   export const createOrder = async (orderData) => {
-    const token = localStorage.getItem('token')
-    return axios.post(`${API_URL}/orders`, orderData, {
-        headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    return api.post('/orders', orderData) 
   }
   //Returns all orders from a given user. If the user has role = 'admin' it will return the orders from every user. 
   export const getOrders = async () => {
@@ -85,40 +66,23 @@ api.interceptors.request.use((config) => {
   }
   //Creates a new collaboration entry in the database. 
   export const submitCollaboration = async (formData) => {
-    return axios.post(`${API_URL}/collaborate`, formData)
+    return api.post('/collaborate', formData)
   }
   //Creates a review for a certain product in the database. 
   export const postReview = async (reviewData) => {
-    const token = localStorage.getItem('token')
-    return axios.post(`${API_URL}/review`, reviewData, {
-        headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    return api.post('/review', reviewData)
   }
   //Returns the reviews made from a certain product. 
   export async function getReviewsByProductId(productId) {
-    return axios.get(`${API_URL}/review/product/${productId}`)
+    return api.get(`/review/product/${productId}`)
   }
   //Creates a new contact entry in the database. 
   export const submitContact = async (formData) => {
-    return axios.post(`${API_URL}/contact`, formData)
+    return api.post('/contact', formData)
   }
   //Returns the contact requests to the user 'Admin'
   export const getContacts = async () => {
-    const token = localStorage.getItem('token')
-    const decoded = jwtDecode(token)
-  
-    return axios.get(`${API_URL}/contact`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      params: {
-        id: decoded.id,
-        role: decoded.role
-      }
-    })
+    return api.get('/contact')
   }
   
 export default api

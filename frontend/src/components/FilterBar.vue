@@ -12,7 +12,7 @@
   
       <div class="filter-group" v-if="role === 'admin'">
         <label>User Name</label>
-        <input type="text" v-model="filters.username" placeholder="Search by name" />
+        <input type="text" v-model="filters.name" placeholder="Search by name" />
       </div>
   
       <button class="reset-btn" @click="resetFilters">Reset</button>
@@ -36,14 +36,14 @@
   const filters = ref({ //The fields are reactive. For each change, it is emited to the parent component. 
     initialDate: '',
     finalDate: '',
-    username: ''
+    name: ''
   })
 
   const resetFilters = () => { //Resets all fields in the bar. 
     filters.value = {
     initialDate: '',
     finalDate: '',
-    username: ''
+    name: ''
   }
   emit('filter', { ...filters.value })
   }

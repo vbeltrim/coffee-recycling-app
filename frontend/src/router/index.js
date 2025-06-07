@@ -57,7 +57,6 @@ router.beforeEach((to, from, next) => {
   if (to.meta.guestOnly && isLoggedIn) {
     return next({ name: 'Homepage' })
   }
-
   // Buyer OR guest pages
   if (to.meta.requiresBuyersGuests) {
     if (isLoggedIn && userRole !== 'buyer') {

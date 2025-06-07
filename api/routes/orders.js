@@ -25,12 +25,13 @@ router.get('/orders',authenticateToken, async (req,res) =>{
     try{
         if(role === 'admin'){
             result = await database.query(
-                'SELECT o.id AS order_id,o.created_at,o.price,o.status,o.paypal_order_id,o.delivery_address,o.billing_address,\n' +
+                'SELECT o.id AS order_id,o.created_at,o.price,o.status,o.paypal_order_id,o.delivery_address,o.billing_address, u.name, \n' +
                 'MAX(CASE WHEN oi.product_id = 1 THEN oi.quantity ELSE 0 END) AS pellets,\n' +
                 'MAX(CASE WHEN oi.product_id = 2 THEN oi.quantity ELSE 0 END) AS logs\n' +
                 'FROM tfg.orders o\n' +
+                'JOIN tfg.users u ON u.id = o.user_id\n' +
                 'JOIN tfg.order_items oi ON o.id = oi.order_id\n'+
-                'GROUP BY o.id, o.created_at, o.price, o.status, o.paypal_order_id, o.delivery_address, o.billing_address\n' +
+                'GROUP BY o.id, o.created_at, o.price, o.status, o.paypal_order_id, o.delivery_address, o.billing_address, u.name\n' +
                 'ORDER BY o.created_at DESC;'
 
         );
@@ -109,7 +110,7 @@ router.post('/orders', authenticateToken, async (req, res) => {
         const orderRes = await database.query( // Adds a
             `INSERT INTO tfg.orders 
        (user_id, price, status, paypal_order_id, delivery_address, billing_address, created_at)
-       VALUES ($1, $2, 'Paid', $3, $4, $5, NOW())
+       VALUES ($1, $2, 'Delivered', $3, $4, $5, NOW())
        RETURNING id`,
             [userId, price, paypalOrderId, deliveryAddress, billingAddress]
         )
